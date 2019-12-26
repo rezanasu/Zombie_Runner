@@ -6,10 +6,11 @@ using UnityEngine.AI;
 
 public class EnemyAI : MonoBehaviour
 {
-    [SerializeField] Transform target;
+   
     [SerializeField] float chaseRange = 5f;
     [SerializeField] float turnSpeed = 5f;
 
+    private Transform target;
     private NavMeshAgent navMeshAgent;
     private float distanceToTarget = Mathf.Infinity;
     private bool isProvoked = false;
@@ -22,6 +23,7 @@ public class EnemyAI : MonoBehaviour
         enemyAnimator = GetComponent<Animator>();
         navMeshAgent = GetComponent<NavMeshAgent>();
         health = GetComponent<EnemyHealth>();
+        target = FindObjectOfType<PlayerHealth>().transform;
     }
 
     // Update is called once per frame
@@ -32,16 +34,20 @@ public class EnemyAI : MonoBehaviour
             enabled = false;
             navMeshAgent.enabled = false;
         }
-        distanceToTarget = Vector3.Distance(target.position, transform.position);
+        else
+        {
+            distanceToTarget = Vector3.Distance(target.position, transform.position);
 
-        if(isProvoked)
-        {
-            EngageTarget();
+            if (isProvoked)
+            {
+                EngageTarget();
+            }
+            else if (distanceToTarget <= chaseRange)
+            {
+                isProvoked = true;
+            }
         }
-        else if (distanceToTarget <= chaseRange)
-        {
-            isProvoked = true;
-        }
+      
     }
 
     public void OnDamageTaken()
